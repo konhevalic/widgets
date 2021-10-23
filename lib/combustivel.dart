@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:extended_masked_text/extended_masked_text.dart';
 
 class Combustivel extends StatefulWidget {
   const Combustivel({ Key? key }) : super(key: key);
@@ -9,14 +10,14 @@ class Combustivel extends StatefulWidget {
 
 class _CombustivelState extends State<Combustivel> {
 
-  final TextEditingController _controllerAlcool = TextEditingController();
-  final TextEditingController _controllerGasolina = TextEditingController();
+  final TextEditingController _controllerAlcool = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.');
+  final TextEditingController _controllerGasolina = MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.');
 
   var _resultado = "";
 
   void _calcular() {
-    double? precoAlcool = double.tryParse(_controllerAlcool.text);
-    double? precoGasolina = double.tryParse(_controllerGasolina.text);
+    double? precoAlcool = double.tryParse(_controllerAlcool.text.replaceAll(',', '.'));
+    double? precoGasolina = double.tryParse(_controllerGasolina.text.replaceAll(',', '.'));
 
     if(precoAlcool == null || precoGasolina == null) {
       setState(() {
@@ -26,19 +27,17 @@ class _CombustivelState extends State<Combustivel> {
       setState(() {
         _resultado = "Melhor abastecer com alcool";
       });
-     // _limparCampos();
     } else if (precoAlcool>=0.7*precoGasolina) {
       setState(() {
         _resultado = "Melhor abastecer com gasolina";
       });
-      //_limparCampos();
     }
   }
 
-  // void _limparCampos() {
-  //   _controllerGasolina.text = "";
-  //   _controllerAlcool.text = "";
-  // }
+  void _limparCampos() {
+    _controllerGasolina.text = "";
+    _controllerAlcool.text = "";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +70,7 @@ class _CombustivelState extends State<Combustivel> {
               TextField(
                 keyboardType: TextInputType.number, 
                 decoration: const InputDecoration(
+                  icon: Icon(Icons.monetization_on),
                   labelText: "Preço do álcool, ex: 4.99"
                 ),
                 style: const TextStyle(
@@ -81,6 +81,7 @@ class _CombustivelState extends State<Combustivel> {
               TextField(
                 keyboardType: TextInputType.number, 
                 decoration: const InputDecoration(
+                  icon: Icon(Icons.monetization_on),
                   labelText: "Preço da gasolina, ex: 5.99"
                 ),
                 style: const TextStyle(
@@ -90,16 +91,32 @@ class _CombustivelState extends State<Combustivel> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 18),
-                child: ElevatedButton (
-                  child: const Text(
-                    "Calcular",
-                    style: TextStyle(fontSize: 16)
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blue[900],
-                    padding: const EdgeInsets.all(16)
-                  ),
-                  onPressed: _calcular,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton (
+                      child: const Text(
+                        "Limpar campos",
+                        style: TextStyle(fontSize: 16)
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red[900],
+                        padding: const EdgeInsets.all(16)
+                      ),
+                      onPressed: _limparCampos,
+                    ),
+                    ElevatedButton (
+                      child: const Text(
+                        "Calcular",
+                        style: TextStyle(fontSize: 16)
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue[900],
+                        padding: const EdgeInsets.all(16)
+                      ),
+                      onPressed: _calcular,
+                    ),
+                  ],
                 )
               ),
               Center(
